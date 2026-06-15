@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title> KAG - Ultimate Edition</title>
+    
+    <meta name="theme-color" content="#ffffff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body { 
+            font-family: 'Sarabun', sans-serif; 
+            -webkit-tap-highlight-color: transparent;
+        }
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+        .input-dark { background-color: #051a14 !important; border: 1px solid #1a423a !important; color: white !important; }
+        .input-dark:focus { border-color: #10b981 !important; outline: none; }
+    </style>
+</head>
+<body id="app-body" class="pb-24 transition-colors duration-500 bg-[#fff5f7] overflow-hidden">
+
+    <div id="login-overlay" class="fixed inset-0 bg-[#051a14]/95 backdrop-blur-md z-[100] flex items-center justify-center p-4 transition-opacity duration-500">
+        <div class="bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl text-center transform transition-transform scale-100">
+            <img src="Screen Shot 2026-06-02 at 9.14.59 AM.jpg" alt="KA-G Logo" class="h-20 mx-auto mb-4 rounded border border-gray-100" onerror="this.style.display='none'">
+            <h2 class="text-2xl font-bold text-pink-900 mb-2">เข้าสู่ระบบ</h2>
+            <p class="text-sm text-gray-500 mb-6">กรุณาระบุข้อมูลเพื่อบันทึกประวัติการเสนอราคา</p>
+            
+            <input type="text" id="sales-input" class="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 mb-3 text-center text-lg font-bold outline-none focus:border-pink-500 transition-colors" placeholder="👤 ระบุชื่อเซลล์ผู้ใช้งาน...">
+            
+            <input type="text" id="customer-input" class="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 mb-5 text-center text-lg font-bold outline-none focus:border-pink-500 transition-colors" placeholder="💼 ระบุชื่อลูกค้า / ชื่องาน...">
+            
+            <button onclick="login()" class="w-full bg-pink-600 text-white font-bold py-4 rounded-xl hover:bg-pink-500 transition-colors text-lg shadow-lg active:scale-95">เริ่มใช้งานระบบ</button>
+        </div>
+    </div>
+
+    <header id="app-header" class="sticky top-0 z-50 backdrop-blur-md border-b shadow-sm transition-colors duration-500 bg-white/90 border-pink-200">
+        <div class="max-w-3xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <img src="Screen Shot 2026-06-02 at 9.14.59 AM.jpg" alt="KA-G Logo" class="h-10 w-auto bg-white p-1 rounded border border-gray-100" onerror="this.style.display='none'">
+                <div>
+                    <h1 id="app-title" class="text-lg font-bold leading-tight transition-colors duration-500 text-pink-900">King of Advertising and Graphics</h1>
+                    <p id="app-subtitle" class="text-xs font-medium transition-colors duration-500 text-pink-500">Pink Edition (Inkjet)</p>
+                </div>
+            </div>
+            <div class="flex flex-col items-end gap-1">
+                <div class="bg-pink-100 text-pink-800 text-[11px] font-bold px-3 py-1.5 rounded-full border border-pink-200 shadow-sm whitespace-nowrap" id="display-username">
+                    👤 ยังไม่ได้เข้าสู่ระบบ
+                </div>
+                <span id="save-status" class="text-[10px] font-bold px-2 py-0.5 rounded-full hidden transition-all duration-300"></span>
+            </div>
+        </div>
+    </header>
+
+    <main id="app-main" class="max-w-3xl mx-auto px-4 py-6 space-y-6">
+        
+        <div id="price-box" class="rounded-3xl p-6 border shadow-2xl relative overflow-hidden transition-colors duration-500 bg-gradient-to-br from-pink-100 to-white border-pink-300">
+            <div class="absolute -right-10 -top-10 w-32 h-32 bg-white/30 rounded-full blur-2xl"></div>
+            
+            <div class="relative z-10">
+                <span class="text-xs font-semibold uppercase tracking-wider opacity-70 mb-1 block">ราคาขายสุทธิ (THB)</span>
+                <div id="res-total" class="text-5xl font-extrabold tracking-tight my-2 flex items-baseline gap-1 transition-colors duration-500 text-pink-900">
+                    0.00
+                </div>
+                
+                <div class="flex items-center justify-between mt-6" id="action-buttons">
+                    <span id="res-type-summary" class="text-xs text-pink-600 font-medium transition-colors duration-500">Inkjet / สติกเกอร์</span>
+                    <div class="flex gap-2">
+                        <button id="btn-copy" onclick="copyQuote()" class="bg-pink-600 hover:bg-pink-500 text-white text-sm font-semibold py-2 px-5 rounded-full shadow-lg transition-transform active:scale-95 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                            คัดลอกข้อความ
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="form-inkjet" class="space-y-4 transition-opacity duration-300">
+            <div class="bg-white border border-pink-200 rounded-2xl p-5 shadow-sm">
+                <h3 class="text-sm font-bold text-pink-800 mb-4 flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-pink-500"></div> เครื่องพิมพ์ และ วัสดุ (Inkjet)
+                </h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-pink-700 mb-2">ระบบเครื่อง</label>
+                        <select id="ij-machine" onchange="updateInkjetMaterials()" class="w-full bg-pink-50 border border-pink-200 text-pink-900 rounded-xl px-4 py-3 text-sm font-medium appearance-none focus:border-pink-500 outline-none">
+                            <option value="d5800">Ink Jet - KAG Indoor # Inkjet D5800</option>
+                            <option value="latex800w">Latex800W</option>
+                            <option value="i3200">i3200</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-pink-700 mb-2">ประเภทงาน / ความเร่งด่วน</label>
+                        <select id="ij-job-type" onchange="calculateAll()" class="w-full bg-pink-100 border border-pink-300 text-pink-900 rounded-xl px-4 py-3 text-sm font-bold appearance-none focus:border-pink-500 outline-none shadow-sm">
+                            <option value="normal">งานปกติ</option>
+                            <option value="urgent_day">งานด่วนภายในวัน (+100 ถ้าน้อยกว่า 3 ตร.ม.)</option>
+                            <option value="urgent_hr">งานด่วน 1-2 ชม. (+150 ถ้าน้อยกว่า 3 ตร.ม.)</option>
+                            <option value="wholesale">ราคาส่งร้านป้าย / เครือข่าย (Wholesale)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-pink-700 mb-2">วัสดุหลัก (เรทราคาปรับอัตโนมัติ)</label>
+                        <select id="ij-material" onchange="calculateAll()" class="w-full bg-pink-50 border border-pink-200 text-pink-900 rounded-xl px-4 py-3 text-sm font-medium appearance-none focus:border-pink-500 outline-none"></select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-pink-700 mb-2">อุปกรณ์เสริม</label>
+                        <select id="ij-accessory" onchange="calculateAll()" class="w-full bg-pink-50 border border-pink-200 text-pink-900 rounded-xl px-4 py-3 text-sm font-medium appearance-none focus:border-pink-500 outline-none">
+                            <option value="0">ไม่มีอุปกรณ์เสริม</option>
+                            <option value="120">ขาตั้งสแตนดี้ (60x160cm) (120 บ.)</option>
+                            <option value="455">ขาตั้งสแตนดี้ (120x240cm) (455 บ.)</option>
+                            <option value="200">ขาตั้งสแตนดี้ เหล็ก (200 บ.)</option>
+                            <option value="500">Rollup (60x160cm) (500 บ.)</option>
+                            <option value="520">Rollup (80x200cm) (520 บ.)</option>
+                            <option value="585">Rollup (85x200cm) (585 บ.)</option>
+                            <option value="1560">Rollup ขาหยดน้ำ (2,000 บ.)</option>
+                            <option value="730">Rollup (100x200cm) (730 บ.)</option>
+                            <option value="830">Rollup (120x200cm) (830 บ.)</option>
+                            <option value="280">HK (300cm) (280 บ.)</option>
+                            <option value="130">X-Stand (60x160cm) (130บ.)</option>
+                            <option value="170">X-Stand (80x180cm) (170 บ.)</option>
+                            <option value="585">J-Flag (50x200cm) (585 บ.)</option>
+                            <option value="650">J-Flag (60x200cm) (650 บ.)</option>
+                            <option value="100">ด้ามจับท่อPVC (100 บ.)</option>
+                            <option value="50">ด้ามจับ PP บอร์ด 5 มิล (50 บ.)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white border border-pink-200 rounded-2xl p-5 shadow-sm">
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-pink-700 mb-2">เคลือบผิวหน้า</label>
+                        <select id="ij-lamination" onchange="calculateAll()" class="w-full bg-pink-50 border border-pink-200 text-pink-900 rounded-xl px-4 py-3 text-sm font-medium appearance-none focus:border-pink-500 outline-none">
+                            <option value="0">ไม่เคลือบ</option>
+                            <option value="50">เคลือบเงา (+50 บ./ตร.ม.)</option>
+                            <option value="50">เคลือบด้าน (+50 บ./ตร.ม.)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-pink-700 mb-2">งานรีดบอร์ด <span class="text-xs text-pink-500">(คำนวณจากแผ่น 120x240cm)</span></label>
+                        <select id="ij-mounting" onchange="calculateAll()" class="w-full bg-pink-50 border border-pink-200 text-pink-900 rounded-xl px-4 py-3 text-sm font-medium appearance-none focus:border-pink-500 outline-none"></select>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-xs font-semibold text-pink-700 mb-2">งานประกอบ / ตัด</label>
+                    <select id="ij-assembly" onchange="calculateAll()" class="w-full bg-pink-50 border border-pink-200 text-pink-900 rounded-xl px-4 py-3 text-sm font-medium appearance-none focus:border-pink-500 outline-none">
+                        <option value="0">ไม่มีงานประกอบ</option>
+                        <option value="120">ตัด-ประกอบใส่อุปกรณ์ (+120 บ./ตร.ม.)</option>
+                        <option value="450">ประกอบกล่องพาสวู๊ด (+450 บ./ตร.ม.)</option>
+                        <option value="300">ประกอบกล่องพีพีบอร์ด (+300 บ./ตร.ม.)</option>
+                        <option value="650">ประกอบอื่นๆ ดัดโค้งตามรูปทรง (+650 บ./ตร.ม.)</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="flex items-center gap-3 p-3 bg-pink-100 rounded-xl border border-pink-300 cursor-pointer shadow-sm">
+                        <input type="checkbox" id="ij-is-box" onchange="toggleBoxMode(); calculateAll();" class="w-5 h-5 accent-pink-600">
+                        <span class="text-sm text-pink-900 font-bold">ทำกล่อง (เปลี่ยนเป็น กว้าง x สูง x ลึก)</span>
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mb-4" id="ij-dim-grid">
+                    <div>
+                        <label class="block text-xs font-semibold text-pink-700 mb-2">กว้าง (ซม.)</label>
+                        <input type="number" id="ij-width" value="10" min="1" oninput="calculateAll()" class="w-full bg-pink-50 border border-pink-200 text-pink-900 rounded-xl px-4 py-3 text-lg font-bold text-center focus:border-pink-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-pink-700 mb-2">สูง (ซม.)</label>
+                        <input type="number" id="ij-height" value="10" min="1" oninput="calculateAll()" class="w-full bg-pink-50 border border-pink-200 text-pink-900 rounded-xl px-4 py-3 text-lg font-bold text-center focus:border-pink-500 outline-none">
+                    </div>
+                    <div id="ij-depth-container" class="hidden">
+                        <label class="block text-xs font-semibold text-pink-700 mb-2">ลึก (ซม.)</label>
+                        <input type="number" id="ij-depth" value="5" min="1" oninput="calculateAll()" class="w-full bg-pink-50 border border-pink-200 text-pink-900 rounded-xl px-4 py-3 text-lg font-bold text-center focus:border-pink-500 outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-pink-700 mb-2">จำนวน (ชิ้น)</label>
+                        <input type="number" id="ij-qty" value="1" min="1" oninput="calculateAll()" class="w-full bg-pink-50 border border-pink-200 text-pink-900 rounded-xl px-4 py-3 text-lg font-bold text-center focus:border-pink-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-pink-700 mb-2">บวกกำไรเพิ่ม (%)</label>
+                        <input type="number" id="ij-profit" value="30" min="0" oninput="calculateAll()" class="w-full bg-pink-100 border border-pink-300 text-pink-900 rounded-xl px-4 py-3 text-lg font-bold text-center focus:border-pink-500 outline-none">
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-pink-200 grid grid-cols-2 gap-3">
+                    <label class="flex items-center gap-3 p-3 bg-pink-50 rounded-xl border border-pink-200 cursor-pointer">
+                        <input type="checkbox" id="ij-diecut" onchange="calculateAll()" class="w-5 h-5 accent-pink-500">
+                        <span class="text-sm text-pink-900 font-medium">ไดคัท CNC (+200/ตร.ม.)</span>
+                    </label>
+                    <div class="flex items-center gap-3 p-3 bg-pink-50 rounded-xl border border-pink-200">
+                        <span class="text-sm text-pink-900 font-medium">ตาไก่ (จุดละ 5 บ.):</span>
+                        <input type="number" id="ij-eyelet-qty" value="0" min="0" oninput="calculateAll()" class="w-16 bg-white border border-pink-300 text-pink-900 rounded-lg px-2 py-1 text-center font-bold focus:border-pink-500 outline-none">
+                    </div>
+                    <div class="flex items-center gap-3 p-3 bg-pink-50 rounded-xl border border-pink-200">
+                        <span class="text-sm text-pink-900 font-medium">จุกปิด HK (ตัวละ 5 บ.):</span>
+                        <input type="number" id="ij-hk-cap-qty" value="0" min="0" oninput="calculateAll()" class="w-16 bg-white border border-pink-300 text-pink-900 rounded-lg px-2 py-1 text-center font-bold focus:border-pink-500 outline-none">
+                    </div>
+                    <div class="flex items-center gap-3 p-3 bg-pink-50 rounded-xl border border-pink-200">
+                        <span class="text-sm text-pink-900 font-medium">ตะขอ (ตัวละ 5 บ.):</span>
+                        <input type="number" id="ij-hook-qty" value="0" min="0" oninput="calculateAll()" class="w-16 bg-white border border-pink-300 text-pink-900 rounded-lg px-2 py-1 text-center font-bold focus:border-pink-500 outline-none">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white border border-pink-200 rounded-2xl p-5 shadow-sm space-y-2 mt-4 text-sm text-[#4a1d2e]">
+                <h3 class="text-sm font-bold text-pink-700 border-b border-pink-100 pb-2 mb-3">สรุปรายละเอียดการคำนวณ (Inkjet)</h3>
+                
+                <div id="out-ij-flat-size-row" class="flex justify-between items-center mt-1 hidden pb-2">
+                    <span class="text-pink-800 font-bold">ขนาดกางออก (ทำกล่อง):</span>
+                    <span id="out-ij-flat-size" class="text-pink-900 font-mono font-bold bg-pink-100 px-2 py-0.5 rounded border border-pink-200">0 x 0 cm</span>
+                </div>
+
+                <div id="out-ij-split-row" class="flex justify-between items-center mt-1 hidden pb-2 bg-red-50 p-2 rounded border border-red-200">
+                    <span class="text-red-700 font-bold">⚠️ กว้างเกิน 120 ซม. (ต่อลาย):</span>
+                    <span id="out-ij-split-details" class="text-red-800 font-mono font-bold">แบ่ง 0 ชิ้น</span>
+                </div>
+
+                <div id="out-ij-height-extension-row" class="flex justify-between items-center mt-1 hidden pb-2 bg-amber-50 p-2 rounded border border-amber-200">
+                    <span class="text-amber-700 font-bold">⚠️ ความสูงเกิน 240 ซม. (ต้องต่อบอร์ด):</span>
+                    <span id="out-ij-height-extension-details" class="text-amber-800 font-mono font-bold text-right"></span>
+                </div>
+
+                <div class="flex justify-between items-center mt-2 pt-2 border-t border-pink-100">
+                    <span class="text-pink-800">เลย์แนวนอน (แกน X):</span>
+                    <span id="out-ij-cols" class="text-pink-900 font-mono font-bold text-right">0 ชิ้น</span>
+                </div>
+                <div class="flex justify-between items-center mt-1">
+                    <span class="text-pink-800">เลย์แนวตั้ง (แกน Y):</span>
+                    <span id="out-ij-rows" class="text-pink-900 font-mono font-bold text-right">0 ชิ้น</span>
+                </div>
+
+                <div class="flex flex-col gap-1 mt-3 py-2 bg-pink-50 border border-pink-200 rounded-lg px-3 shadow-inner">
+                    <span id="lbl-ij-lay-unit" class="text-pink-800 font-medium border-b border-pink-200 pb-1">พื้นที่และวัสดุที่ใช้:</span>
+                    <span id="out-ij-lay-1sqm" class="text-pink-900 font-mono font-bold text-base mt-1 text-center">-</span>
+                </div>
+
+                <div class="flex justify-between items-center mt-3 pt-3 border-t border-pink-100">
+                    <span class="text-pink-800">พื้นที่ชิ้นงานรวม (ดิบ):</span>
+                    <span id="out-ij-raw-sqm" class="text-pink-900 font-mono">0.00 ตร.ม.</span>
+                </div>
+                
+                <div class="flex justify-between items-center mt-2 font-bold py-1.5 bg-pink-100 border border-pink-300 rounded-lg px-3 shadow-md">
+                    <span class="text-pink-900">พื้นที่นำไปคิดราคา:</span>
+                    <span id="out-ij-billable-sqm" class="font-mono text-base text-pink-700">0 ตร.ม.</span>
+                </div>
+
+                <div class="flex justify-between items-center mt-3 pt-3 border-t border-pink-100">
+                    <span class="text-pink-800">ต้นทุนวัสดุเพียว (ไม่รวมออปชั่น):</span>
+                    <span id="out-ij-base-mat" class="text-pink-900 font-mono">0.00 บ./ตร.ม.</span>
+                </div>
+
+                <div class="flex justify-between items-center mt-3 pt-3 border-t border-pink-200">
+                    <span class="text-pink-800">ต้นทุนร้านค้ารวม (วัสดุ+ออปชั่น):</span>
+                    <span id="out-ij-cost" class="text-pink-900 font-mono font-bold">0.00 บาท</span>
+                </div>
+                
+                <div class="flex justify-between items-center mt-4 pt-4 border-t border-pink-200">
+                    <span class="text-pink-600 font-semibold">ราคาขายรวม (ยังไม่ได้+กำไร):</span>
+                    <span id="out-ij-base-lot" class="text-lg font-bold text-pink-700 font-mono">0.00 บาท</span>
+                </div>
+                
+                <div class="flex justify-between items-center mt-1">
+                    <span class="text-pink-600 font-semibold">ราคาขาย / ชิ้นงาน (ยังไม่ได้+กำไร):</span>
+                    <span id="out-ij-base-piece" class="text-lg font-bold text-pink-700 font-mono">0.00 บาท</span>
+                </div>
+
+                <div class="flex justify-between items-center py-2 px-3 mt-4 bg-pink-100 border border-pink-300 rounded-lg shadow-md">
+                    <span class="text-pink-800 font-bold text-base">ราคาขาย / ชิ้น (+กำไร <span id="out-ij-profit-lbl">0</span>%):</span>
+                    <span id="out-ij-sell-piece" class="text-2xl font-bold text-pink-700 font-mono tracking-wider">0.00 บาท</span>
+                </div>
+
+                <div class="flex justify-between items-center py-2 px-3 mt-2 bg-pink-50 border border-pink-200 rounded-lg shadow-inner">
+                    <span class="text-pink-800 font-bold text-sm">ราคาขายรวม Net (Lot):</span>
+                    <span id="out-ij-sell-lot" class="text-xl font-bold text-pink-700 font-mono tracking-wider">0.00 บาท</span>
+                </div>
+                
+                <div class="flex justify-between items-center py-2 px-3 mt-2 bg-pink-50 border border-pink-200 rounded-lg shadow-inner">
+                    <span class="text-pink-800 font-bold text-sm">ราคาขายเฉลี่ย / ตร.ม.:</span>
+                    <span id="out-ij-sell-sqm" class="text-xl font-bold text-pink-700 font-mono tracking-wider">0.00 บาท</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="form-digital" class="space-y-4 hidden transition-opacity duration-300">
+            <div class="bg-white border border-blue-200 rounded-2xl p-5 shadow-sm">
+                <h3 class="text-sm font-bold text-blue-800 mb-4 flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-blue-500"></div> Digital Laser A3+
+                </h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-blue-700 mb-2">ชนิดกระดาษ</label>
+                        <select id="dig-paper" onchange="calculateAll()" class="w-full bg-blue-50 border border-blue-200 text-blue-900 rounded-xl px-4 py-3 text-sm font-medium appearance-none focus:border-blue-500 outline-none">
+                            <option value="7" selected>อาร์ตมัน + การ์ดขาว พิมพ์สี  (7 บ./แผ่น)</option>
+                            <option value="10">อาร์ตการ์ด 300g-400g (10บ./แผ่น)</option>
+                            <option value="3">ปอนด์ 100 gm (3 บ./แผ่น)</option>
+                            <option value="5">ปอนด์ 120 gm (5 บ./แผ่น)</option>
+                            <option value="7">สติ๊กเกอร์พีพีด้าน/เงา/ใส/คราฟท์ (7 บ./แผ่น)</option>
+                            <option value="5">สติ๊กเกอร์กระดาษขาวเงา (5 บ./แผ่น)</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-blue-700 mb-2">รูปแบบพิมพ์</label>
+                            <select id="dig-side" onchange="calculateAll()" class="w-full bg-blue-50 border border-blue-200 text-blue-900 rounded-xl px-4 py-3 text-sm font-medium appearance-none focus:border-blue-500 outline-none">
+                                <option value="10">1 หน้า (พิมพ์สี) </option>
+                                <option value="15">2 หน้า (พิมพ์สี) </option>
+                                <option value="7.5">1 หน้า (ขาวดำ) </option>
+                                <option value="10"> 2 หน้า (ขาวดำ) </option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-blue-700 mb-2">เคลือบพิเศษ</label>
+                            <select id="dig-coating" onchange="calculateAll()" class="w-full bg-blue-50 border border-blue-200 text-blue-900 rounded-xl px-4 py-3 text-sm font-medium appearance-none focus:border-blue-500 outline-none">
+                                <option value="0">ไม่เคลือบ</option>
+                                <option value="7">(เคลือบ Digtital) 1 หน้า  (+7)</option>
+                                <option value="14">(เคลือบ Digtital) 2 หน้า (+14)</option>
+                                <option value="9">(เคลือบ injet เย็น)  (+9)</option>
+                                <option value="5">(เคลือบ แข็ง A4)  (+5)</option>
+                                <option value="10">(เคลือบ แข็ง A3)  (+10)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-2 border-t border-blue-200 pt-4">
+                        <label class="flex items-center gap-3 p-3 bg-blue-100 rounded-xl border border-blue-300 cursor-pointer shadow-sm mb-3">
+                            <input type="checkbox" id="dig-is-box" onchange="toggleDigBoxMode(); calculateAll();" class="w-5 h-5 accent-blue-600">
+                            <span class="text-sm text-blue-900 font-bold">ทำกล่อง (เปลี่ยนเป็น กว้าง x สูง x ลึก)</span>
+                        </label>
+                        
+                        <span class="text-sm font-bold text-blue-900 block mb-2">ขนาดชิ้นงาน <span id="dig-lbl-size-info" class="text-blue-500 font-normal">(ระบบหมุนชิ้นงานอัตโนมัติ)</span></span>
+                        
+                        <div class="grid grid-cols-2 gap-3 mb-4" id="dig-dim-grid">
+                            <div>
+                                <label class="block text-xs font-semibold text-blue-700 mb-2">กว้าง (ซม.)</label>
+                                <input type="number" id="dig-item-width" value="9" min="0.1" step="0.1" oninput="calculateAll()" class="w-full bg-blue-50 border border-blue-200 text-blue-900 rounded-xl px-4 py-3 text-center font-bold focus:border-blue-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-blue-700 mb-2">สูง (ซม.)</label>
+                                <input type="number" id="dig-item-height" value="5.5" min="0.1" step="0.1" oninput="calculateAll()" class="w-full bg-blue-50 border border-blue-200 text-blue-900 rounded-xl px-4 py-3 text-center font-bold focus:border-blue-500 outline-none">
+                            </div>
+                            <div id="dig-depth-container" class="hidden">
+                                <label class="block text-xs font-semibold text-blue-700 mb-2">ลึก (ซม.)</label>
+                                <input type="number" id="dig-item-depth" value="3" min="0.1" step="0.1" oninput="calculateAll()" class="w-full bg-blue-50 border border-blue-200 text-blue-900 rounded-xl px-4 py-3 text-center font-bold focus:border-blue-500 outline-none">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-blue-700 mb-2">จำนวนสั่ง (ใบ)</label>
+                                <input type="number" id="dig-target-pieces" value="100" min="1" oninput="calculateAll()" class="w-full bg-blue-50 border border-blue-200 text-blue-900 rounded-xl px-4 py-3 text-center font-bold focus:border-blue-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-blue-700 mb-2">บวกกำไร (%)</label>
+                                <input type="number" id="dig-profit" value="30" min="0" oninput="calculateAll()" class="w-full bg-blue-100 border border-blue-300 text-blue-900 rounded-xl px-4 py-3 text-center font-bold focus:border-blue-500 outline-none">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-t border-blue-200">
+                        <label class="block text-xs font-semibold text-blue-700 mb-2">รูปแบบการไดคัท</label>
+                        <select id="dig-diecut" onchange="calculateAll()" class="w-full bg-blue-50 border border-blue-200 text-blue-900 rounded-xl px-4 py-3 text-sm font-medium appearance-none focus:border-blue-500 outline-none">
+                            <option value="0">ไม่ไดคัท</option>
+                            <option value="7">ไดคัทสติกเกอร์ (graphtec 50%) (+7 บ./แผ่น)</option>
+                            <option value="40">ไดคัทกระดาษ 100% (+40 บ./แผ่น)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white border border-blue-200 rounded-2xl p-5 shadow-sm space-y-2 mt-4 text-sm text-[#1e3a8a]">
+                <h3 class="text-sm font-bold text-blue-700 border-b border-blue-100 pb-2 mb-3">รายละเอียดการหาต้นทุน Digital A3+</h3>
+                
+                <div id="out-dig-flat-size-row" class="flex justify-between items-center mt-1 hidden pb-2">
+                    <span class="text-blue-800 font-bold">ขนาดกางออก (ทำกล่อง):</span>
+                    <span id="out-dig-flat-size" class="text-blue-900 font-mono font-bold bg-blue-100 px-2 py-0.5 rounded border border-blue-200">0 x 0 cm</span>
+                </div>
+
+                <div class="flex justify-between items-center"><span class="text-blue-800">เลย์แนวนอน (แกน X):</span><span id="out-dig-cols" class="text-blue-900 font-mono">0 ชิ้น</span></div>
+                <div class="flex justify-between items-center mt-1"><span class="text-blue-800">เลย์แนวตั้ง (แกน Y):</span><span id="out-dig-rows" class="text-blue-900 font-mono">0 ชิ้น</span></div>
+                <div class="flex justify-between items-center mt-2"><span id="lbl-dig-lay" class="text-blue-800">1 แผ่น ลงได้สูงสุด:</span><span id="out-dig-lay" class="text-blue-900 font-bold bg-blue-100 px-2 py-0.5 rounded border border-blue-200">0 ชิ้น</span></div>
+                <div class="flex justify-between items-center mt-2"><span class="text-blue-800">จำนวนแผ่นที่ต้องใช้ทั้งหมด:</span><span id="out-dig-sheets" class="text-blue-600 font-mono text-base font-bold">0 แผ่น</span></div>
+                
+                <div class="flex justify-between items-center mt-1"><span class="text-blue-800">เรทราคาขายแผ่น A3+ (ตามขั้นบันได):</span><span id="out-dig-tier-price" class="text-emerald-600 font-bold text-xs bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">0 บาท</span></div>
+
+                <div class="flex justify-between items-center mt-3 pt-3 border-t border-blue-100"><span class="text-blue-800">ต้นทุนจริงรวมทั้งหมด:</span><span id="out-dig-cost" class="text-blue-900 font-mono">0.00 บาท</span></div>
+                
+                <div class="flex justify-between items-center mt-4 pt-4 border-t border-blue-100">
+                    <span class="text-blue-600 font-semibold">ราคาขายรวม (ยังไม่ได้+กำไร):</span>
+                    <span id="out-dig-sell-lot" class="text-xl font-bold text-blue-700 font-mono">0.00 บาท</span>
+                </div>
+                
+                <div class="flex justify-between items-center py-2 px-3 mt-2 bg-blue-50 border border-blue-200 rounded-lg shadow-inner">
+                    <span class="text-blue-700 font-bold text-sm">ราคาขายเฉลี่ย / แผ่น A3+:</span>
+                    <span id="out-dig-sell-sheet" class="text-lg font-bold text-blue-600 font-mono tracking-wider">0.00 บาท</span>
+                </div>
+                
+                <div class="flex justify-between items-center py-2 px-3 mt-2 bg-blue-50 border border-blue-200 rounded-lg shadow-inner">
+                    <span class="text-blue-700 font-bold text-sm">ราคาขาย / ชิ้นงาน (ยังไม่ได้+กำไร):</span>
+                    <span id="out-dig-base-piece" class="text-lg font-bold text-blue-600 font-mono tracking-wider">0.00 บาท</span>
+                </div>
+                <div class="flex justify-between items-center py-2 px-3 mt-2 bg-blue-100 border border-blue-300 rounded-lg shadow-md">
+                    <span class="text-blue-800 font-bold text-base">ราคาขาย / ชิ้นงาน (+กำไร <span id="out-dig-profit-lbl">0</span>%):</span>
+                    <span id="out-dig-sell-piece" class="text-2xl font-bold text-blue-700 font-mono tracking-wider">0.00 บาท</span>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="form-roll" class="space-y-4 hidden transition-opacity duration-300">
+            <div class="bg-[#0a2620] border border-[#1a423a] rounded-2xl p-5 shadow-sm space-y-4 text-white">
+                <h3 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-emerald-400"></div> ข้อมูลสั่งพิมพ์สติ๊กเกอร์ม้วน
+                </h3>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="col-span-2">
+                        <label class="block text-xs font-semibold text-emerald-200/70 mb-1">จำนวนสั่ง (ดวง)</label>
+                        <input type="number" id="r-qty" value="5700" oninput="calculateAll()" class="w-full input-dark rounded-xl px-4 py-3 text-lg font-bold text-center text-yellow-300 focus:border-yellow-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-emerald-200/70 mb-1">ขนาดงาน กว้าง (ซ.ม.)</label>
+                        <input type="number" id="r-w" value="9.50" step="0.01" oninput="calculateAll()" class="w-full input-dark rounded-xl px-4 py-2 text-center font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-emerald-200/70 mb-1">ขนาดงาน ยาว (ซ.ม.)</label>
+                        <input type="number" id="r-h" value="10.50" step="0.01" oninput="calculateAll()" class="w-full input-dark rounded-xl px-4 py-2 text-center font-bold">
+                    </div>
+                    <div class="col-span-2 mt-2">
+                        <label class="block text-xs font-semibold text-emerald-200/70 mb-1">ชนิดสติ๊กเกอร์ / ประเภทหลัง</label>
+                        <select id="r-material-preset" onchange="updateRollPaperRate()" class="w-full input-dark rounded-xl px-4 py-3 text-sm font-medium appearance-none">
+                            <optgroup label="หลังกลาสซีน (Glassine)">
+                                <option value="24">กระดาษขาวเงา (24 บ./ตร.ม.)</option>
+                                <option value="24" selected>PP Preal (24 บ./ตร.ม.)</option>
+                                <option value="30">PP ขาวมัน (30 บ./ตร.ม.)</option>
+                                <option value="30">PP ขาวด้าน (30 บ./ตร.ม.)</option>
+                                <option value="30">PP ใส (30 บ./ตร.ม.)</option>
+                                <option value="180">เปลือกไข่ (180 บ./ตร.ม.)</option>
+                            </optgroup>
+                            <optgroup label="หลังคราฟ (Kraft)">
+                                <option value="30">กระดาษขาวเงา (30 บ./ตร.ม.)</option>
+                                <option value="46">PP Preal (46 บ./ตร.ม.)</option>
+                                <option value="46">PP ขาวมัน (46 บ./ตร.ม.)</option>
+                                <option value="46">PP ขาวด้าน (46 บ./ตร.ม.)</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="flex items-center gap-3 p-3 bg-[#051a14] rounded-xl border border-[#1a423a] cursor-pointer">
+                            <input type="checkbox" id="r-lamination" onchange="updateRollPaperRate()" class="w-5 h-5 accent-emerald-500">
+                            <span class="text-sm text-white font-medium text-emerald-300">เพิ่มเคลือบ (+10 บาท/ตร.ม.)</span>
+                        </label>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-xs font-semibold text-emerald-400 mb-1">ช่องไฟ AC (ซ.ม.) 🔒</label>
+                        <input type="number" id="r-gap-ac" value="0.400" readonly class="w-full bg-emerald-950/60 border border-[#1a423a] rounded-xl px-4 py-2 text-center text-emerald-300 cursor-not-allowed select-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-emerald-400 mb-1">ช่องไฟ AR (ซ.ม.) 🔒</label>
+                        <input type="number" id="r-gap-ar" value="0.400" readonly class="w-full bg-emerald-950/60 border border-[#1a423a] rounded-xl px-4 py-2 text-center text-emerald-300 cursor-not-allowed select-none">
+                    </div>
+                    <div class="col-span-2 h-px bg-[#1a423a] my-2"></div>
+                    <div>
+                        <label class="block text-xs font-semibold text-emerald-400 mb-1">หน้ากว้าง (นิ้ว) 🔒</label>
+                        <input type="number" id="r-media-in" value="12.5" readonly class="w-full bg-emerald-950/60 border border-[#1a423a] rounded-xl px-4 py-2 text-center text-emerald-300 cursor-not-allowed select-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-emerald-400 mb-1">หน้ากว้างเลย์ได้ (ซ.ม.) 🔒</label>
+                        <input type="number" id="r-usable-cm" value="32" readonly class="w-full bg-emerald-950/60 border border-[#1a423a] rounded-xl px-4 py-2 text-center text-emerald-300 cursor-not-allowed select-none">
+                    </div>
+                    <div class="col-span-2 h-px bg-[#1a423a] my-2"></div>
+                    
+                    <div>
+                        <label class="block text-xs font-semibold text-emerald-200/70 mb-1">ตั้งงาน (เมตร)</label>
+                        <input type="number" id="r-setup" value="10.00" step="0.1" oninput="calculateAll()" class="w-full bg-emerald-950/40 border border-[#1a423a] rounded-xl px-4 py-2 text-center text-emerald-200/50">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-emerald-200/70 mb-1">เผื่อเสีย (%)</label>
+                        <input type="number" id="r-waste-pct" value="10" oninput="calculateAll()" class="w-full bg-emerald-950/40 border border-[#1a423a] rounded-xl px-4 py-2 text-center text-emerald-200/50">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-xs font-semibold text-emerald-200/70 mb-1">ค่าจ้างทำ ราคา/เมตร</label>
+                        <input type="number" id="r-print-rate" value="30" step="0.1" oninput="calculateAll()" class="w-full input-dark rounded-xl px-4 py-2 text-center font-bold border-emerald-500/50">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-emerald-400 mb-1">ราคากระดาษ 🔒</label>
+                        <input type="number" id="r-paper-rate" value="20.00" readonly class="w-full bg-emerald-950/60 border border-[#1a423a] rounded-xl px-4 py-2 text-center font-bold text-emerald-300 cursor-not-allowed select-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-rose-300 mb-1">Proof สี</label>
+                        <select id="r-proof-cost-val" onchange="calculateAll()" class="w-full input-dark rounded-xl px-4 py-2 text-center font-bold border-rose-500/50 appearance-none">
+                            <option value="0">ไม่ทำ Proof</option>
+                            <option value="600">ทำ Proof สี (+600 บ.)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-emerald-200/70 mb-1">กำไรที่ต้องการ (%)</label>
+                        <input type="number" id="r-profit" value="15.00" step="0.1" oninput="calculateAll()" class="w-full bg-emerald-900/50 border border-emerald-500/50 rounded-xl px-4 py-2 text-center font-bold">
+                    </div>
+
+                </div>
+            </div>
+            <div class="bg-[#0a2620] border border-[#1a423a] rounded-2xl p-5 shadow-sm space-y-2 mt-4 text-sm text-white">
+                <h3 class="text-sm font-bold text-emerald-300 border-b border-[#1a423a] pb-2 mb-3">รายละเอียดการหาต้นทุน สติ๊กเกอร์ม้วน</h3>
+                <div class="flex justify-between items-center mt-2"><span class="text-emerald-100">เลย์แนวนอน (หน้ากว้าง):</span><span id="out-cols" class="text-white font-mono">0 ดวง</span></div>
+                <div class="flex justify-between items-center"><span class="text-emerald-100">เลย์แนวตั้ง (ต่อ 1 เมตร):</span><span id="out-rows" class="text-white font-mono">0 ดวง</span></div>
+                
+                <div class="flex justify-between items-center mt-2 pt-2 border-t border-[#1a423a]/50"><span class="text-emerald-200">เลย์แบบ AC (แนวนอน 32 ซม.) ได้:</span><span id="out-lay-ac" class="text-white font-mono font-bold">0 ดวง/แถว</span></div>
+                <div class="flex justify-between items-center"><span class="text-emerald-200">เลย์แบบ AR (แนวตั้ง 32 ซม.) ได้:</span><span id="out-lay-ar" class="text-white font-mono font-bold">0 ดวง/แถว</span></div>
+                
+                <div class="flex justify-between items-center mt-1"><span class="text-emerald-100">1 เมตร เลย์ได้สูงสุดรวม:</span><span id="out-lay" class="text-white font-bold bg-emerald-900/40 px-2 py-0.5 rounded border border-emerald-500/30">27 ดวง</span></div>
+                
+                <div class="flex justify-between items-center mt-2 pt-2 border-t border-[#1a423a]/50"><span class="text-emerald-100">ผลิตจริง:</span><span id="out-actual" class="text-white font-mono">211.11 เมตร</span></div>
+                <div class="flex justify-between items-center"><span id="lbl-waste-pct" class="text-emerald-100">เผื่อเสีย (10%):</span><span id="out-waste" class="text-white font-mono">21.11 เมตร</span></div>
+                <div class="flex justify-between items-center text-emerald-300 font-bold py-1.5 bg-[#051a14] border border-[#1a423a] rounded-lg px-3 my-2 shadow-inner">
+                    <span>รวมความยาวที่ต้องใช้:</span><span id="out-total-m" class="font-mono text-base">242.22 เมตร</span>
+                </div>
+                <div class="flex justify-between items-center mt-3 pt-3 border-t border-[#1a423a]"><span class="text-emerald-100">มูลค่างานพิมพ์:</span><span id="out-print-cost" class="text-white font-mono">7,581.56 บาท</span></div>
+                <div class="flex justify-between items-center"><span class="text-emerald-100">ค่ากระดาษ:</span><span id="out-paper-cost" class="text-white font-mono">2,090.00 บาท</span></div>
+                <div class="flex justify-between items-center"><span class="text-emerald-100">ค่า Proof สี:</span><span id="out-proof-cost" class="text-white font-mono">0.00 บาท</span></div>
+                <div class="flex justify-between items-center text-cyan-300 font-bold py-1.5 bg-[#051a14] border border-[#1a423a] rounded-lg px-3 my-2 shadow-inner">
+                    <span>ต้นทุนรวม:</span><span id="out-total-cost" class="font-mono text-base">9,671.56 บาท</span>
+                </div>
+                <div class="flex justify-between items-center mt-4 pt-4 border-t border-[#1a423a]">
+                    <span class="text-emerald-400 font-semibold">ราคาขาย / Lot (ยังไม่ได้+กำไร):</span>
+                    <span id="out-sell-lot" class="text-xl font-bold text-white font-mono">0.00 บาท</span>
+                </div>
+                <div class="flex justify-between items-center py-2 px-3 mt-2 bg-[#051a14] border border-[#1a423a] rounded-lg shadow-inner">
+                    <span class="text-yellow-400 font-bold text-base">ราคาขาย / ดวง (+กำไร <span id="out-r-profit-lbl">0</span>%):</span>
+                    <span id="out-sell-piece" class="text-2xl font-bold text-yellow-300 font-mono tracking-wider">0.00 บาท</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="common-cost-box" class="border rounded-2xl p-4 transition-colors duration-500 bg-pink-50 border-pink-200">
+            <div class="flex justify-between items-center text-sm mb-2">
+                <span id="lbl-cost" class="font-medium text-pink-700">ต้นทุนร้านค้ารวม (ก่อนบวกกำไร)</span>
+                <span id="res-cost" class="font-mono font-bold text-pink-900">0.00 ฿</span>
+            </div>
+            <div class="flex justify-between items-center text-sm">
+                <span id="lbl-profit" class="font-medium text-pink-700">กำไรสุทธิคาดการณ์ (<span id="res-profit-pct">0</span>%)</span>
+                <span id="res-profit-val" class="font-mono font-bold text-pink-600">+0.00 ฿</span>
+            </div>
+        </div>
+
+    </main>
+
+    <nav id="app-nav" class="fixed bottom-0 w-full border-t pb-safe z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.3)] transition-colors duration-500 bg-white border-pink-200">
+        <div class="grid grid-cols-3 items-center max-w-3xl mx-auto p-2 text-center">
+            <button id="nav-inkjet" onclick="switchTab('inkjet')" class="flex flex-col items-center p-2 transition-colors duration-300 text-pink-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                <span class="text-[10px] font-semibold">Inkjet/Sticker</span>
+            </button>
+            <button id="nav-digital" onclick="switchTab('digital')" class="flex flex-col items-center p-2 transition-colors duration-300 text-pink-300 hover:text-pink-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                <span class="text-[10px] font-semibold">Digital A3+</span>
+            </button>
+            <button id="nav-roll" onclick="switchTab('roll')" class="flex flex-col items-center p-2 transition-colors duration-300 text-pink-300 hover:text-pink-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+                <span class="text-[10px] font-semibold">Sticker Roll</span>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        let currentSales = "ไม่ระบุเซลล์";
+        let currentCustomer = "ไม่ระบุลูกค้า";
+        let currentUser = "ไม่ระบุตัวตน"; 
+
+        const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwtWS8oFhKmTDX51k4PbnMD4FowX10AHjUcqXi5KdftXBO0AQbiOO7CeUVNVtv-UklF/exec"; 
+
+        function login() {
+            const salesInput = document.getElementById('sales-input').value.trim();
+            const customerInput = document.getElementById('customer-input').value.trim();
+            
+            if(!salesInput && !customerInput) {
+                alert("กรุณาระบุ 'ชื่อเซลล์' และ 'ชื่อลูกค้า' ก่อนเข้าใช้งานครับ");
+                return;
+            }
+            if(!salesInput) {
+                alert("กรุณาระบุ 'ชื่อเซลล์' ก่อนเข้าใช้งานครับ");
+                return;
+            }
+            if(!customerInput) {
+                alert("กรุณาระบุ 'ชื่อลูกค้า' ก่อนเข้าใช้งานครับ");
+                return;
+            }
+
+            currentSales = salesInput;
+            currentCustomer = customerInput;
+            currentUser = `${currentSales} (ลูกค้า: ${currentCustomer})`;
+            
+            document.getElementById('display-username').innerText = `👤 เซลล์: ${currentSales} | ลค: ${currentCustomer}`;
+            
+            document.getElementById('login-overlay').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('login-overlay').style.display = 'none';
+                document.getElementById('app-body').classList.remove('overflow-hidden');
+            }, 500);
+        }
+        
+        let currentTab = 'inkjet';
+
+        const inkjetMaterials = {
+            d5800: [
+                { name: "PP Paper / พีพีเปเปอร์", cost: 250, t1: 350, t2: 320, t3: 290, t4: 270, ws: 260 },
+                { name: "Sticker PP Inkjet / สติ๊กเกอร์ พีพี", cost: 230, t1: 330, t2: 300, t3: 280, t4: 260, ws: 260 },
+                { name: "PVC Sticker / สติ๊กเกอร์ พีวีซี ขาว", cost: 330, t1: 450, t2: 420, t3: 390, t4: 370, ws: 370 },
+                { name: "PVC Sticker Gray Back / สติ๊กเกอร์ พีวีซี ดำ", cost: 380, t1: 500, t2: 470, t3: 440, t4: 420, ws: 420 }
+            ],
+            latex800w: [
+                { name: "สติ๊กเกอร์ PVC ขาว / PVC WHITE", cost: 250, t1: 350, t2: 330, t3: 310, t4: 290, ws: 370 }, 
+                { name: "สติ๊กเกอร์ PVC รีมูฟหลังเทา / PVC BLACK", cost: 350, t1: 480, t2: 450, t3: 420, t4: 400, ws: 400 },
+                { name: "สติ๊กเกอร์ PVC 3M (MBA-3M-IJ1220)", cost: 400, t1: 580, t2: 550, t3: 520, t4: 500, ws: 500 },
+                { name: "สติ๊กเกอร์ PVC 3M (MBA-3M-IJ1220) + เคลือบ 3M", cost: 500, t1: 700, t2: 670, t3: 640, t4: 600, ws: 600 },
+                { name: "สติ๊กเกอร์ PVC ใส", cost: 300, t1: 390, t2: 370, t3: 350, t4: 330, ws: 290 },
+                { name: "สติ๊กเกอร์ PVC ใส พิมพ์รองขาว", cost: 400, t1: 520, t2: 490, t3: 460, t4: 440, ws: 440 },
+                { name: "PP Film Matt (MBA)", cost: 320, t1: 450, t2: 420, t3: 390, t4: 370, ws: 370 },
+                { name: "สติ๊กเกอร์ ซีทรู", cost: 450, t1: 650, t2: 620, t3: 590, t4: 550, ws: 340 }
+            ],
+            i3200: [
+                { name: "PP PAPER / Eco Glossy", cost: 250, t1: 350, t2: 320, t3: 290, t4: 270, ws: 260 },
+                { name: "สติ๊กเกอร์ พีพี", cost: 200, t1: 280, t2: 260, t3: 240, t4: 220, ws: 260 },
+                { name: "สติ๊กเกอร์ พีวีซี ขาว", cost: 200, t1: 280, t2: 260, t3: 240, t4: 220, ws: 260 },
+                { name: "สติ๊กเกอร์ พีวีซี หลังเทา", cost: 250, t1: 350, t2: 330, t3: 310, t4: 290, ws: 330 },
+                { name: "สติ๊กเกอร์ ซีทรู", cost: 300, t1: 420, t2: 390, t3: 360, t4: 340, ws: 340 },
+                { name: "ไวนิล 360 แกรม / หลังขาว", cost: 70, t1: 150, t2: 130, t3: 110, t4: 100, ws: 90 },
+                { name: "ไวนิล 360 แกรม / หลังดำ", cost: 80, t1: 160, t2: 140, t3: 120, t4: 110, ws: 100 },
+                { name: "ไวนิล 400 แกรม / หลังขาว", cost: 100, t1: 180, t2: 160, t3: 140, t4: 120, ws: 110 },
+                { name: "สติ๊กเกอร์ใสเงา", cost: 250, t1: 350, t2: 330, t3: 310, t4: 290, ws: 290 },
+                { name: "สติ๊กเกอร์ใส (ตู้ซุ่น)", cost: 280, t1: 390, t2: 370, t3: 350, t4: 330, ws: 330 },
+                { name: "แบ็คลิทฟิล์ม", cost: 400, t1: 550, t2: 520, t3: 500, t4: 480, ws: 480 },
+                { name: "PVC ไดคัทเปล่า หน้า 53 ซม. (ขาวเงา/ดำด้าน)", cost: 300, t1: 350, t2: 330, t3: 310, t4: 290, ws: 290 }
+            ]
+        };
+
+        const inkjetMounting = {
+            d5800: [
+                { name: "ไม่รีด", price: 0 },
+                { name: "บอร์ด 4 มิล", price: 50 },
+                { name: "บอร์ด 5 มิล", price: 60 },
+                { name: "พลาสวูด 3 มิล", price: 120 },
+                { name: "พลาสวูด 5 มิล", price: 200 },
+                { name: "โฟม 5.5 มิล", price: 100 },
+                { name: "ABS 1 มิล", price: 300 }
+            ],
+            latex800w: [
+                { name: "ไม่รีด", price: 0 },
+                { name: "บอร์ด 4 มิล", price: 50 },
+                { name: "บอร์ด 5 มิล", price: 60 },
+                { name: "พลาสวูด 3 มิล", price: 120 },
+                { name: "พลาสวูด 5 มิล", price: 200 },
+                { name: "โฟม 5.5 มิล", price: 100 },
+                { name: "ABS 1 มิล", price: 300 }
+            ],
+            i3200: [
+                { name: "ไม่รีด", price: 0 },
+                { name: "บอร์ด 4 มิล", price: 50 },
+                { name: "บอร์ด 5 มิล", price: 60 },
+                { name: "พลาสวูด 3 มิล", price: 120 },
+                { name: "พลาสวูด 5 มิล", price: 200 },
+                { name: "โฟม 5.5 มิล", price: 100 },
+                { name: "ABS 1 มิล", price: 300 }
+            ]
+        };
+
+        function switchTab(tab) {
+            currentTab = tab;
+            const tabs = ['inkjet', 'digital', 'roll'];
+            
+            const body = document.getElementById('app-body');
+            const header = document.getElementById('app-header');
+            const title = document.getElementById('app-title');
+            const subtitle = document.getElementById('app-subtitle');
+            const priceBox = document.getElementById('price-box');
+            const priceText = document.getElementById('res-total');
+            const nav = document.getElementById('app-nav');
+            const costBox = document.getElementById('common-cost-box');
+            
+            body.className = "pb-24 transition-colors duration-500";
+            header.className = "sticky top-0 z-50 backdrop-blur-md border-b shadow-sm transition-colors duration-500";
+            title.className = "text-lg font-bold leading-tight transition-colors duration-500";
+            subtitle.className = "text-xs font-medium transition-colors duration-500";
+            priceBox.className = "rounded-3xl p-6 border shadow-2xl relative overflow-hidden transition-colors duration-500 bg-gradient-to-br";
+            priceText.className = "text-5xl font-extrabold tracking-tight my-2 flex items-baseline gap-1 transition-colors duration-500";
+            nav.className = "fixed bottom-0 w-full border-t pb-safe z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.3)] transition-colors duration-500";
+            costBox.className = "border rounded-2xl p-4 transition-colors duration-500";
+
+            if (tab === 'inkjet') {
+                body.classList.add('bg-[#fff5f7]');
+                header.classList.add('bg-white/90', 'border-pink-200');
+                title.classList.add('text-pink-900');
+                subtitle.classList.add('text-pink-500');
+                subtitle.innerText = "Pink Edition (Inkjet)";
+                priceBox.classList.add('from-pink-100', 'to-white', 'border-pink-300');
+                priceText.classList.add('text-pink-900');
+                nav.classList.add('bg-white', 'border-pink-200');
+                
+                costBox.classList.add('bg-pink-50', 'border-pink-200');
+                document.getElementById('lbl-cost').className = 'font-medium text-pink-700';
+                document.getElementById('res-cost').className = 'font-mono font-bold text-pink-900';
+                document.getElementById('lbl-profit').className = 'font-medium text-pink-700';
+                document.getElementById('res-profit-val').className = 'font-mono font-bold text-pink-600';
+                
+                document.getElementById('res-type-summary').className = "text-xs text-pink-600 font-medium transition-colors duration-500";
+                document.getElementById('btn-copy').className = "bg-pink-600 hover:bg-pink-500 text-white text-sm font-semibold py-2 px-5 rounded-full shadow-lg transition-transform active:scale-95 flex items-center gap-2";
+                
+            } else if (tab === 'digital') {
+                body.classList.add('bg-[#eff6ff]');
+                header.classList.add('bg-white/90', 'border-blue-200');
+                title.classList.add('text-blue-900');
+                subtitle.classList.add('text-blue-500');
+                subtitle.innerText = "Blue Edition (Digital A3+)";
+                priceBox.classList.add('from-blue-100', 'to-white', 'border-blue-300');
+                priceText.classList.add('text-blue-900');
+                nav.classList.add('bg-white', 'border-blue-200');
+                
+                costBox.classList.add('bg-blue-50', 'border-blue-200');
+                document.getElementById('lbl-cost').className = 'font-medium text-blue-700';
+                document.getElementById('res-cost').className = 'font-mono font-bold text-blue-900';
+                document.getElementById('lbl-profit').className = 'font-medium text-blue-700';
+                document.getElementById('res-profit-val').className = 'font-mono font-bold text-blue-600';
+                
+                document.getElementById('res-type-summary').className = "text-xs text-blue-600 font-medium transition-colors duration-500";
+                document.getElementById('btn-copy').className = "bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold py-2 px-5 rounded-full shadow-lg transition-transform active:scale-95 flex items-center gap-2";
+
+            } else {
+                body.classList.add('bg-[#051a14]');
+                header.classList.add('bg-[#051a14]/90', 'border-[#1a423a]');
+                title.classList.add('text-white');
+                subtitle.classList.add('text-emerald-400');
+                subtitle.innerText = "คำนวณราคางานด่วน";
+                priceBox.classList.add('from-[#0a2620]', 'to-[#051a14]', 'border-[#1a423a]');
+                priceText.classList.add('text-white');
+                nav.classList.add('bg-[#0a2620]', 'border-[#1a423a]');
+                
+                costBox.classList.add('bg-gradient-to-r', 'from-[#0a2620]', 'to-[#051a14]', 'border-[#1a423a]');
+                document.getElementById('lbl-cost').className = 'font-medium text-emerald-200/80';
+                document.getElementById('res-cost').className = 'font-mono font-bold text-white';
+                document.getElementById('lbl-profit').className = 'font-medium text-emerald-200/80';
+                document.getElementById('res-profit-val').className = 'font-mono font-bold text-emerald-400';
+                
+                document.getElementById('res-type-summary').className = "text-xs text-emerald-400 font-medium transition-colors duration-500";
+                document.getElementById('btn-copy').className = "bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold py-2 px-5 rounded-full shadow-lg transition-transform active:scale-95 flex items-center gap-2";
+            }
+            
+            tabs.forEach(t => {
+                const navBtn = document.getElementById(`nav-${t}`);
+                const formEl = document.getElementById(`form-${t}`);
+                
+                navBtn.className = "flex flex-col items-center p-2 transition-colors duration-300"; 
+                
+                if (t === tab) {
+                    formEl.classList.remove('hidden');
+                    if(tab === 'inkjet') navBtn.classList.add('text-pink-600');
+                    if(tab === 'digital') navBtn.classList.add('text-blue-600');
+                    if(tab === 'roll') navBtn.classList.add('text-white');
+                } else {
+                    formEl.classList.add('hidden');
+                    if(tab === 'inkjet') navBtn.classList.add('text-pink-300', 'hover:text-pink-500');
+                    if(tab === 'digital') navBtn.classList.add('text-blue-300', 'hover:text-blue-500');
+                    if(tab === 'roll') navBtn.classList.add('text-emerald-700', 'hover:text-emerald-500');
+                }
+            });
+
+            const summaryType = document.getElementById('res-type-summary');
+            if(tab === 'inkjet') summaryType.innerText = "Inkjet / สติกเกอร์";
+            if(tab === 'digital') summaryType.innerText = "Digital Laser A3+";
+            if(tab === 'roll') summaryType.innerText = "สติ๊กเกอร์ม้วน (Roll)";
+            
+            calculateAll();
+        }
+
+        function toggleBoxMode() {
+            const isBox = document.getElementById('ij-is-box').checked;
+            const depthContainer = document.getElementById('ij-depth-container');
+            const dimGrid = document.getElementById('ij-dim-grid');
+            
+            if (isBox) {
+                depthContainer.classList.remove('hidden');
+                dimGrid.classList.remove('grid-cols-2');
+                dimGrid.classList.add('grid-cols-3');
+            } else {
+                depthContainer.classList.add('hidden');
+                dimGrid.classList.remove('grid-cols-3');
+                dimGrid.classList.add('grid-cols-2');
+            }
+        }
+        
+        function toggleDigBoxMode() {
+            const isBox = document.getElementById('dig-is-box').checked;
+            const depthContainer = document.getElementById('dig-depth-container');
+            const dimGrid = document.getElementById('dig-dim-grid');
+            
+            if (isBox) {
+                depthContainer.classList.remove('hidden');
+                dimGrid.classList.remove('grid-cols-2');
+                dimGrid.classList.add('grid-cols-3');
+            } else {
+                depthContainer.classList.add('hidden');
+                dimGrid.classList.remove('grid-cols-3');
+                dimGrid.classList.add('grid-cols-2');
+            }
+        }
+
+        function updateInkjetMaterials() {
+            const machine = document.getElementById('ij-machine').value;
+            const matSelect = document.getElementById('ij-material');
+            const mountSelect = document.getElementById('ij-mounting');
+            
+            matSelect.innerHTML = "";
+            inkjetMaterials[machine].forEach((mat, idx) => {
+                let opt = document.createElement("option");
+                opt.value = idx; 
+                opt.innerHTML = `${mat.name}`;
+                matSelect.appendChild(opt);
+            });
+
+            mountSelect.innerHTML = "";
+            inkjetMounting[machine].forEach(mnt => {
+                let opt = document.createElement("option");
+                opt.value = mnt.price;
+                let suffix = mnt.price > 0 ? ` (+${mnt.price} บ./ตร.ม.)` : "";
+                opt.innerHTML = `${mnt.name}${suffix}`;
+                mountSelect.appendChild(opt);
+            });
+
+            calculateAll();
+        }
+        
+        function updateRollPaperRate() {
+            let baseRate = parseFloat(document.getElementById('r-material-preset').value) || 0;
+            let hasLamination = document.getElementById('r-lamination').checked;
+            let finalRate = baseRate + (hasLamination ? 10 : 0);
+            
+            document.getElementById('r-paper-rate').value = finalRate.toFixed(2);
+            calculateAll();
+        }
+
+        let autoSaveTimer = null;
+        function triggerAutoSave() {
+            const statusEl = document.getElementById('save-status');
+            
+            statusEl.classList.remove('hidden');
+            statusEl.innerText = "⏳ กำลังบันทึกข้อมูล...";
+            statusEl.className = "text-[10px] font-bold px-2 py-0.5 rounded-full transition-all duration-300 text-orange-600 bg-orange-100 border border-orange-200 inline-block";
+
+            clearTimeout(autoSaveTimer);
+            
+            autoSaveTimer = setTimeout(() => {
+                sendLogToEmail(window.currentQuoteData);
+                
+                statusEl.innerText = "☁️ อัปเดตข้อมูลบนระบบแล้ว";
+                statusEl.className = "text-[10px] font-bold px-2 py-0.5 rounded-full transition-all duration-300 text-emerald-600 bg-emerald-100 border border-emerald-200 inline-block";
+                
+                setTimeout(() => {
+                    statusEl.classList.add('hidden');
+                }, 3000);
+            }, 2000); 
+        }
+
+        function calculateAll() {
+            let totalCost = 0;
+            let profitPercent = 0;
+            let finalPrice = 0;
+            let detailSize = "", detailQty = "", strDetails = "";
+
+            if (currentTab === 'inkjet') {
+                const machine = document.getElementById('ij-machine').value;
+                const matIdx = parseInt(document.getElementById('ij-material').value) || 0;
+                const selectedMat = inkjetMaterials[machine][matIdx]; 
+                
+                let baseMatCost = selectedMat.cost; 
+                const jobType = document.getElementById('ij-job-type').value;
+
+                const accCost = parseFloat(document.getElementById('ij-accessory').value) || 0;
+                const lamCost = parseFloat(document.getElementById('ij-lamination').value) || 0;
+                const mountCost = parseFloat(document.getElementById('ij-mounting').value) || 0;
+                const assemblyCost = parseFloat(document.getElementById('ij-assembly').value) || 0;
+                const w = parseFloat(document.getElementById('ij-width').value) || 0;
+                const h = parseFloat(document.getElementById('ij-height').value) || 0;
+                const qty = parseInt(document.getElementById('ij-qty').value) || 1;
+                
+                const hasDiecut = document.getElementById('ij-diecut').checked;
+                const eyeletQty = parseInt(document.getElementById('ij-eyelet-qty').value) || 0;
+                const hkCapQty = parseInt(document.getElementById('ij-hk-cap-qty').value) || 0;
+                const hookQty = parseInt(document.getElementById('ij-hook-qty').value) || 0;
+                
+                const isBox = document.getElementById('ij-is-box').checked;
+                const d = parseFloat(document.getElementById('ij-depth').value) || 0;
+                
+                profitPercent = parseFloat(document.getElementById('ij-profit').value) || 0;
+
+                if (w <= 0 || h <= 0 || qty <= 0) return;
+
+                let flatW = w;
+                let flatH = h;
+                
+                if (isBox) {
+                    flatW = (w * 2) + (d * 2) + 2; 
+                    flatH = h + (d * 2) + 2;
+                }
+
+                let splitPieces = 1;
+                let wForLayout = flatW;
+                let hForLayout = flatH;
+                
+                if (flatW > 120) {
+                    splitPieces = Math.ceil(flatW / 120);
+                    wForLayout = flatW / splitPieces; 
+                    
+                    document.getElementById('out-ij-split-row').classList.remove('hidden');
+                    document.getElementById('out-ij-split-details').innerText = `แบ่ง ${splitPieces} ชิ้น (กว้างชิ้นละ ${wForLayout.toFixed(2)} ซม.)`;
+                } else {
+                    document.getElementById('out-ij-split-row').classList.add('hidden');
+                }
+
+                let isMounting = mountCost > 0;
+                let bestCols = 0, bestRows = 0, bestPieces = 0;
+                let isRotated = false;
+                let bestRoll = 120;
+                let boardsNeeded = 0;
+                let totalSqmUsed = 0;
+
+                let extraHeight = 0;
+                let verticalSheets = 1;
+
+                if (flatH > 240) {
+                    extraHeight = flatH - 240;
+                    verticalSheets = Math.ceil(flatH / 240);
+                }
+
+                if (isMounting) {
+                    if (flatH > 240) {
+                        let c1 = Math.floor(120 / wForLayout);
+                        if (c1 === 0) c1 = 1;
+                        bestCols = c1;
+                        bestRows = 1;
+                        bestPieces = c1;
+                        isRotated = false;
+                        
+                        document.getElementById('out-ij-height-extension-row').classList.remove('hidden');
+                    } else {
+                        let c1 = Math.floor(120 / wForLayout);
+                        let r1 = Math.floor(240 / hForLayout);
+                        let fit1 = c1 * r1;
+
+                        let c2 = Math.floor(120 / hForLayout);
+                        let r2 = Math.floor(240 / wForLayout);
+                        let fit2 = c2 * r2;
+
+                        if (fit1 >= fit2) {
+                            bestCols = c1; bestRows = r1; bestPieces = fit1; isRotated = false;
+                        } else {
+                            bestCols = c2; bestRows = r2; bestPieces = fit2; isRotated = true;
+                        }
+                        document.getElementById('out-ij-height-extension-row').classList.add('hidden');
+                    }
+
+                    if (bestPieces > 0) {
+                        let baseBoards = Math.ceil((qty * splitPieces) / bestPieces); 
+                        boardsNeeded = baseBoards * verticalSheets;
+                        totalSqmUsed = boardsNeeded * 2.88; 
+                    }
+
+                    if (flatH > 240) {
+                        document.getElementById('out-ij-height-extension-details').innerText = `ต่อเพิ่ม ${extraHeight.toFixed(2)} ซม. (รวมใช้บอร์ด ${boardsNeeded} แผ่น)`;
+                    }
+
+                    document.getElementById('out-ij-cols').innerText = `${bestCols} ชิ้น ${isRotated ? '[หมุน]' : ''}`;
+                    document.getElementById('out-ij-rows').innerText = `${bestRows} ชิ้น ${isRotated ? '[หมุน]' : ''}`;
+                    
+                    document.getElementById('lbl-ij-lay-unit').innerText = `พื้นที่บอร์ดที่ใช้ (${boardsNeeded} แผ่น):`;
+                    document.getElementById('out-ij-lay-1sqm').innerText = `รวม ${totalSqmUsed.toFixed(2)} ตร.ม. (ลงได้ ${bestPieces} ตัว/หน้ากว้างบอร์ด)`;
+
+                } else {
+                    let rolls = [90, 100, 120];
+                    let bestEff = -1;
+
+                    rolls.forEach(roll => {
+                        let c1 = Math.floor(roll / wForLayout);
+                        let r1 = Math.floor(100 / hForLayout);
+                        let eff1 = (c1 * r1 * wForLayout * hForLayout) / (roll * 100);
+
+                        if (c1 > 0 && eff1 > bestEff) {
+                            bestEff = eff1; bestRoll = roll; 
+                            bestCols = c1; bestRows = r1; bestPieces = c1 * r1; isRotated = false;
+                        }
+
+                        let c2 = Math.floor(roll / hForLayout);
+                        let r2 = Math.floor(100 / wForLayout); 
+                        let eff2 = (c2 * r2 * wForLayout * hForLayout) / (roll * 100);
+
+                        if (c2 > 0 && eff2 > bestEff) {
+                            bestEff = eff2; bestRoll = roll; 
+                            bestCols = c2; bestRows = r2; bestPieces = c2 * r2; isRotated = true;
+                        }
+                    });
+
+                    if (bestEff === -1) {
+                        document.getElementById('out-ij-cols').innerText = `0 ชิ้น (ขนาดงานใหญ่เกินไป)`;
+                        document.getElementById('out-ij-rows').innerText = `0 ชิ้น`;
+                        document.getElementById('lbl-ij-lay-unit').innerText = `พื้นที่ที่ใช้:`;
+                        document.getElementById('out-ij-lay-1sqm').innerText = `-`;
+                        totalSqmUsed = 0;
+                    } else {
+                        let metersNeeded = Math.ceil((qty * splitPieces) / bestPieces);
+                        totalSqmUsed = metersNeeded * (bestRoll / 100);
+
+                        document.getElementById('out-ij-cols').innerText = `${bestCols} ชิ้น (บนหน้าวัสดุ ${bestRoll} ซม.) ${isRotated ? '[หมุน]' : ''}`;
+                        document.getElementById('out-ij-rows').innerText = `${bestRows} ชิ้น (ต่อความยาว 1 เมตร) ${isRotated ? '[หมุน]' : ''}`;
+                        
+                        document.getElementById('lbl-ij-lay-unit').innerText = `พื้นที่ม้วนที่ใช้ (หน้า ${bestRoll}ซม x ${metersNeeded}ม):`;
+                        document.getElementById('out-ij-lay-1sqm').innerText = `รวม ${totalSqmUsed.toFixed(2)} ตร.ม. (ลงได้ ${bestPieces} ตัว/เมตร)`;
+                    }
+
+                    document.getElementById('out-ij-height-extension-row').classList.add('hidden');
+                }
+
+                let totalRawSqm = ((flatW * flatH) / 10000) * qty;
+                let billableSqm = 0;
+
+                if (isMounting && boardsNeeded > 0) {
+                    billableSqm = totalSqmUsed; 
+                } else {
+                    billableSqm = Math.max(1, Math.ceil(totalRawSqm));
+                }
+
+                let baseSellSqm = 0;
+                let tierText = "";
+
+                if (jobType === 'wholesale') {
+                    baseSellSqm = selectedMat.ws || selectedMat.t4;
+                    tierText = "ราคาส่ง (ร้านป้าย)";
+                } else {
+                    if (billableSqm >= 100) { baseSellSqm = selectedMat.t4; tierText = "100+ ตร.ม."; }
+                    else if (billableSqm >= 30) { baseSellSqm = selectedMat.t3; tierText = "30-100 ตร.ม."; }
+                    else if (billableSqm >= 10) { baseSellSqm = selectedMat.t2; tierText = "10-30 ตร.ม."; }
+                    else { baseSellSqm = selectedMat.t1; tierText = "1-10 ตร.ม."; }
+
+                    if (billableSqm < 3) {
+                        if (jobType === 'normal') { baseSellSqm += 50; tierText += " (งานปกติ <3 ตร.ม. +50)"; }
+                        else if (jobType === 'urgent_day') { baseSellSqm += 100; tierText += " (ด่วนในวัน <3 ตร.ม. +100)"; }
+                        else if (jobType === 'urgent_hr') { baseSellSqm += 150; tierText += " (ด่วน 1-2ชม. <3 ตร.ม. +150)"; }
+                    }
+                }
+                
+                if (billableSqm >= 100) baseMatCost *= 0.85;
+                else if (billableSqm >= 50) baseMatCost *= 0.90;
+                else if (billableSqm >= 20) baseMatCost *= 0.95;
+
+                let finPerSqm = lamCost + mountCost + assemblyCost;
+                if (hasDiecut) finPerSqm += 200;
+
+                let areaCostTotal = billableSqm * (baseMatCost + finPerSqm);
+                let extrasPerPiece = accCost + (eyeletQty * 5) + (hkCapQty * 5) + (hookQty * 5);
+                let extrasTotal = extrasPerPiece * qty;
+                
+                totalCost = areaCostTotal + extrasTotal;
+                
+                let areaSellTotal = billableSqm * (baseSellSqm + finPerSqm);
+                let baseLotPrice = areaSellTotal + extrasTotal; // ราคาขายรวม (ยังไม่ได้+กำไร)
+                let basePiecePrice = qty > 0 ? baseLotPrice / qty : 0; // ราคาขาย / ชิ้น (ยังไม่ได้+กำไร)
+
+                // 🌟 อัปเดตสูตรใหม่: คำนวณเป็นเปอร์เซ็นต์บวกเพิ่มตรงๆ จากราคาขายรวม (Markup)
+                finalPrice = baseLotPrice + (baseLotPrice * (profitPercent / 100));
+
+                if (finalPrice < 100 && finalPrice > 0) finalPrice = 100;
+
+                let sell_piece = qty > 0 ? finalPrice / qty : 0;
+                let sell_per_sqm = billableSqm > 0 ? finalPrice / billableSqm : 0;
+
+                if (isBox) {
+                    document.getElementById('out-ij-flat-size-row').classList.remove('hidden');
+                    document.getElementById('out-ij-flat-size').innerText = `${flatW} x ${flatH} cm`;
+                    detailSize = `${w}x${h}x${d} cm (กางออก ${flatW}x${flatH} cm)`;
+                } else {
+                    document.getElementById('out-ij-flat-size-row').classList.add('hidden');
+                    detailSize = `${w}x${h} cm`;
+                }
+
+                let ijMachineOpt = document.getElementById('ij-machine').options[document.getElementById('ij-machine').selectedIndex].text;
+                let ijLamOpt = document.getElementById('ij-lamination').options[document.getElementById('ij-lamination').selectedIndex].text.split('(')[0].trim();
+                
+                strDetails = `${ijMachineOpt} | วัสดุ: ${selectedMat.name} | เคลือบ: ${ijLamOpt} [${tierText}]`;
+                if(hasDiecut) strDetails += " | ไดคัท CNC";
+
+                detailQty = `${qty} ชิ้น`;
+            
+                document.getElementById('out-ij-raw-sqm').innerText = totalRawSqm.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " ตร.ม.";
+
+                if (isMounting && boardsNeeded > 0) {
+                    document.getElementById('out-ij-billable-sqm').innerText = `${boardsNeeded} แผ่นเต็ม (${billableSqm.toFixed(2)} ตร.ม.)`;
+                } else {
+                    document.getElementById('out-ij-billable-sqm').innerText = billableSqm.toFixed(2) + " ตร.ม.";
+                }
+
+                document.getElementById('out-ij-base-mat').innerText = baseMatCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " บ./ตร.ม.";
+                document.getElementById('out-ij-cost').innerText = totalCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " บาท";
+                
+                document.getElementById('out-ij-base-lot').innerText = baseLotPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " บาท";
+                document.getElementById('out-ij-base-piece').innerText = basePiecePrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " บาท";
+
+                document.getElementById('out-ij-sell-lot').innerText = finalPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " บาท";
+                
+                document.getElementById('out-ij-profit-lbl').innerText = profitPercent;
+                document.getElementById('out-ij-sell-piece').innerText = sell_piece.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " บาท";
+                
+                document.getElementById('out-ij-sell-sqm').innerText = sell_per_sqm.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " บาท";
+
+            } else if (currentTab === 'digital') {
+                const paperCost = parseFloat(document.getElementById('dig-paper').value) || 0;
+                const baseSideCost = parseFloat(document.getElementById('dig-side').value) || 1;
+                const coatCost = parseFloat(document.getElementById('dig-coating').value) || 0;
+                const itemW = parseFloat(document.getElementById('dig-item-width').value) || 1;
+                const itemH = parseFloat(document.getElementById('dig-item-height').value) || 1;
+                const itemD = parseFloat(document.getElementById('dig-item-depth').value) || 0;
+                const targetQty = parseInt(document.getElementById('dig-target-pieces').value) || 1;
+                profitPercent = parseFloat(document.getElementById('dig-profit').value) || 0;
+
+                const digDiecutCost = parseFloat(document.getElementById('dig-diecut').value) || 0; 
+                const isBox = document.getElementById('dig-is-box').checked;
+
+                let flatW = itemW;
+                let flatH = itemH;
+
+                if (isBox) {
+                    flatW = (itemW * 2) + (itemD * 2) + 2; 
+                    flatH = itemH + (itemD * 2) + 2;
+                }
+
+                let sheetW = 32;
+                let sheetH = 47;
+                let sheetName = "13x19 นิ้ว";
+                let costMultiplier = 1;
+
+                if ((flatW > 32 || flatH > 47) && (flatW > 47 || flatH > 32)) {
+                    sheetH = 87;
+                    sheetName = "13x35 นิ้ว";
+                    costMultiplier = 2; 
+                    document.getElementById('dig-lbl-size-info').innerText = "(Auto: สลับเป็น 13x35 นิ้ว)";
+                    document.getElementById('dig-lbl-size-info').className = "text-yellow-600 font-normal";
+                } else {
+                    document.getElementById('dig-lbl-size-info').innerText = "(หมุนเพื่อประหยัดพื้นที่)";
+                    document.getElementById('dig-lbl-size-info').className = "text-blue-500 font-normal";
+                }
+
+                let cols1 = (flatW > 0) ? Math.floor(sheetW / flatW) : 0;
+                let rows1 = (flatH > 0) ? Math.floor(sheetH / flatH) : 0;
+                let fit1 = cols1 * rows1;
+
+                let cols2 = (flatH > 0) ? Math.floor(sheetW / flatH) : 0;
+                let rows2 = (flatW > 0) ? Math.floor(sheetH / flatW) : 0;
+                let fit2 = cols2 * rows2;
+
+                let bestCols = 0, bestRows = 0, piecesPerSheet = 0;
+
+                if (fit1 >= fit2) {
+                    piecesPerSheet = fit1; bestCols = cols1; bestRows = rows1;
+                } else {
+                    piecesPerSheet = fit2; bestCols = cols2; bestRows = rows2; 
+                }
+                
+                let sheetsNeeded = 0;
+                if(piecesPerSheet > 0) { sheetsNeeded = Math.ceil(targetQty / piecesPerSheet); }
+
+                let a3_equivalents = sheetsNeeded * costMultiplier;
+
+                let sheetCost = paperCost + baseSideCost + coatCost + digDiecutCost;
+                totalCost = a3_equivalents * sheetCost;
+                
+                let tierPrice = 80;
+                if (sheetsNeeded >= 100) {
+                    tierPrice = 30;
+                } else if (sheetsNeeded >= 51) {
+                    tierPrice = 35;
+                } else if (sheetsNeeded >= 21) {
+                    tierPrice = 45;
+                } else if (sheetsNeeded >= 11) {
+                    tierPrice = 50;
+                } else {
+                    tierPrice = 80;
+                }
+
+                let baseSellPerSheet = tierPrice + coatCost + digDiecutCost;
+                let baseFinalPrice = a3_equivalents * baseSellPerSheet; // ราคาขายรวม (ยังไม่ได้+กำไร)
+                let baseSellPiece = targetQty > 0 ? baseFinalPrice / targetQty : 0;
+
+                // 🌟 อัปเดตสูตรใหม่: คำนวณเป็นเปอร์เซ็นต์บวกเพิ่มตรงๆ จากราคาขายรวม (Markup)
+                finalPrice = baseFinalPrice + (baseFinalPrice * (profitPercent / 100));
+                
+                if (isBox) {
+                    document.getElementById('out-dig-flat-size-row').classList.remove('hidden');
+                    document.getElementById('out-dig-flat-size').innerText = `${flatW} x ${flatH} cm`;
+                    detailSize = `${itemW}x${itemH}x${itemD} cm (กางออก ${flatW}x${flatH} cm)`;
+                } else {
+                    document.getElementById('out-dig-flat-size-row').classList.add('hidden');
+                    detailSize = `${itemW}x${itemH} cm`;
+                }
+
+                detailQty = `${targetQty} ดวง (${sheetsNeeded} แผ่น ${sheetName})`;
+                
+                let digPaperOpt = document.getElementById('dig-paper').options[document.getElementById('dig-paper').selectedIndex].text.split('(')[0].trim();
+                let digCoatOpt = document.getElementById('dig-coating').options[document.getElementById('dig-coating').selectedIndex].text.split('(')[0].trim();
+                strDetails = `กระดาษ: ${digPaperOpt} | เคลือบ: ${digCoatOpt}`;
+
+                if (finalPrice < 100 && finalPrice > 0) finalPrice = 100;
+
+                let sell_piece = targetQty > 0 ? finalPrice / targetQty : 0;
+                let avg_sell_per_sheet = a3_equivalents > 0 ? finalPrice / a3_equivalents : 0;
+
+                document.getElementById('out-dig-cols').innerText = bestCols + " ชิ้น";
+                document.getElementById('out-dig-rows').innerText = bestRows + " ชิ้น";
+                document.getElementById('lbl-dig-lay').innerText = `1 แผ่น (${sheetName}) ลงได้สูงสุด:`;
+                document.getElementById('out-dig-lay').innerText = piecesPerSheet + " ชิ้น";
+                document.getElementById('out-dig-sheets').innerText = sheetsNeeded + " แผ่น";
+                
+                document.getElementById('out-dig-tier-price').innerText = tierPrice + " บาท/แผ่น";
+                document.getElementById('out-dig-cost').innerText = totalCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " บาท";
+                
+                document.getElementById('out-dig-sell-lot').innerText = baseFinalPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " บาท";
+                document.getElementById('out-dig-sell-sheet').innerText = avg_sell_per_sheet.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " บาท";
+                
+                document.getElementById('out-dig-base-piece').innerText = baseSellPiece.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " บาท";
+                document.getElementById('out-dig-profit-lbl').innerText = profitPercent;
+                document.getElementById('out-dig-sell-piece').innerText = sell_piece.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " บาท";
+
+            } else if (currentTab === 'roll') {
+                let qty = parseFloat(document.getElementById('r-qty').value) || 0;
+                let w = parseFloat(document.getElementById('r-w').value) || 0;
+                let h = parseFloat(document.getElementById('r-h').value) || 0;
+                let gap_ac = parseFloat(document.getElementById('r-gap-ac').value) || 0;
+                let gap_ar = parseFloat(document.getElementById('r-gap-ar').value) || 0;
+                let media_in = parseFloat(document.getElementById('r-media-in').value) || 0;
+                let usable_cm = parseFloat(document.getElementById('r-usable-cm').value) || 0;
+                let setup = parseFloat(document.getElementById('r-setup').value) || 0;
+                let waste_pct = parseFloat(document.getElementById('r-waste-pct').value) || 0;
+                let print_rate = parseFloat(document.getElementById('r-print-rate').value) || 0;
+                let paper_rate = parseFloat(document.getElementById('r-paper-rate').value) || 0;
+                
+                let proof_cost = parseFloat(document.getElementById('r-proof-cost-val').value) || 0;
+
+                profitPercent = parseFloat(document.getElementById('r-profit').value) || 0;
+                document.getElementById('lbl-waste-pct').innerText = `เผื่อเสีย (${waste_pct}%):`;
+
+                let ac_cols = Math.floor(usable_cm / (w + gap_ac));
+                let ac_rows = Math.floor(100 / (h + gap_ar));
+                let lay_ac = ac_cols * ac_rows;
+
+                let ar_cols = Math.floor(usable_cm / (h + gap_ar));
+                let ar_rows = Math.floor(100 / (w + gap_ac));
+                let lay_ar = ar_cols * ar_rows;
+
+                let best_lay = Math.max(lay_ac, lay_ar);
+                let final_cols = 0, final_rows = 0;
+                if (lay_ac >= lay_ar) { final_cols = ac_cols; final_rows = ac_rows; } 
+                else { final_cols = ar_cols; final_rows = ar_rows; }
+
+                let actual_m = best_lay > 0 ? qty / best_lay : 0;
+                let waste_m = actual_m * (waste_pct / 100);
+                let total_m = setup + actual_m + waste_m;
+
+                let paper_width_m = Math.floor(media_in * 2.54) / 100;
+                let print_cost = total_m * print_rate;
+                let paper_cost = actual_m * paper_width_m * paper_rate;
+                
+                totalCost = print_cost + paper_cost + proof_cost; // ต้นทุนรวม (ราคาขายตั้งต้นสำหรับงานม้วน)
+                
+                // 🌟 อัปเดตสูตรใหม่: คำนวณเป็นเปอร์เซ็นต์บวกเพิ่มตรงๆ (Markup)
+                finalPrice = totalCost + (totalCost * (profitPercent / 100));
+
+                let sell_piece = qty > 0 ? finalPrice / qty : 0;
+
+                document.getElementById('out-cols').innerText = final_cols + " ดวง";
+                document.getElementById('out-rows').innerText = final_rows + " ดวง";
+                
+                document.getElementById('out-lay-ac').innerText = ac_cols + " ดวง/แถว";
+                document.getElementById('out-lay-ar').innerText = ar_cols + " ดวง/แถว";
+                
+                document.getElementById('out-lay').innerText = best_lay + " ดวง";
+                document.getElementById('out-actual').innerText = actual_m.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " เมตร";
+                document.getElementById('out-waste').innerText = waste_m.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " เมตร";
+                document.getElementById('out-total-m').innerText = total_m.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " เมตร";
+                document.getElementById('out-print-cost').innerText = print_cost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " บาท";
+                document.getElementById('out-paper-cost').innerText = paper_cost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " บาท";
+                document.getElementById('out-proof-cost').innerText = proof_cost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " บาท";
+                document.getElementById('out-total-cost').innerText = totalCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " บาท";
+                
+                document.getElementById('out-sell-lot').innerText = totalCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " บาท"; // แสดงราคาตั้งต้นก่อนบวกกำไร
+                document.getElementById('out-r-profit-lbl').innerText = profitPercent;
+                document.getElementById('out-sell-piece').innerText = sell_piece.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " บาท";
+
+                detailSize = `${w}x${h} cm`;
+                detailQty = `${qty} ดวง`;
+                
+                let rMatOpt = document.getElementById('r-material-preset').options[document.getElementById('r-material-preset').selectedIndex].text.split('(')[0].trim();
+                let hasLam = document.getElementById('r-lamination').checked;
+                strDetails = `วัสดุ: ${rMatOpt} ${hasLam ? '| มีเคลือบ' : '| ไม่เคลือบ'}`;
+            }
+
+            let profitValue = finalPrice - totalCost;
+            document.getElementById('res-cost').innerText = `${totalCost.toLocaleString('th-TH', {minimumFractionDigits:2, maximumFractionDigits:2})} ฿`;
+            document.getElementById('res-profit-pct').innerText = profitPercent;
+            document.getElementById('res-profit-val').innerText = `+${profitValue.toLocaleString('th-TH', {minimumFractionDigits:2, maximumFractionDigits:2})} ฿`;
+            
+            let finalOutputStr = finalPrice.toLocaleString('th-TH', {minimumFractionDigits:2, maximumFractionDigits:2});
+            let parts = finalOutputStr.split('.');
+            document.getElementById('res-total').innerHTML = `${parts[0]}<span class="text-2xl opacity-50">.${parts[1]}</span>`;
+
+            window.currentQuoteData = {
+                type: document.getElementById('res-type-summary').innerText,
+                details: strDetails || "ไม่มีรายละเอียด",
+                size: detailSize || "-",
+                qty: detailQty || "-",
+                cost: `${totalCost.toLocaleString('th-TH', {minimumFractionDigits:2})} ฿`,
+                profit: `${profitValue.toLocaleString('th-TH', {minimumFractionDigits:2})} ฿`,
+                total: `${finalOutputStr} บาท`
+            };
+
+            if(currentUser !== "ไม่ระบุตัวตน" && currentUser !== "") {
+                triggerAutoSave();
+            }
+        }
+
+        function sendLogToEmail(quoteData) {
+            if(!WEBHOOK_URL) return;
+
+            const payload = {
+                sales: currentSales,
+                customer: currentCustomer,
+                timestamp: new Date().toLocaleString('th-TH'),
+                type: quoteData.type,
+                details: quoteData.details,
+                size: quoteData.size,
+                qty: quoteData.qty,
+                cost: quoteData.cost, 
+                profit: quoteData.profit, 
+                total: quoteData.total
+            };
+
+            fetch(WEBHOOK_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "text/plain" }, 
+                body: JSON.stringify(payload)
+            }).catch(e => console.error("ส่งข้อมูลไม่ผ่าน:", e));
+        }
+
+        function copyQuote() {
+            const data = window.currentQuoteData;
+            const textToCopy = `📋 ใบเสนอราคา KA-G Print\n---------------------------\n🔹 ลูกค้า: ${currentCustomer}\n🔹 หมวดงาน: ${data.type}\n🔹 สเปคงาน: ${data.details}\n🔹 ขนาด: ${data.size}\n🔹 จำนวน: ${data.qty}\n💰 ยอดสุทธิ: ${data.total}\n---------------------------\nผู้เสนอราคา (เซลล์): ${currentSales}\nขอบคุณที่ใช้บริการครับ`;
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert("คัดลอกข้อมูลเรียบร้อยแล้ว!");
+            }).catch(() => {
+                alert("ไม่สามารถคัดลอกได้");
+            });
+        }
+
+        updateInkjetMaterials();
+        updateRollPaperRate();
+        switchTab('inkjet'); 
+    </script>
+</body>
+</html>
